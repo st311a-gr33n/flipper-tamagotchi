@@ -22,8 +22,8 @@ Rename this to `rom.bin`.
   Back button three times within 2 seconds to unlock. The screen also locks
   automatically after 60 seconds of no input.
 
-![Tama P1 gameplay (landscape)](./Screenshot1.png)
-![Tama P1 gameplay (portrait)](./Screenshot2.png)
+![Tama P1 Menu with Lockscreen](./Screenshot1.png)
+![Tama P1 Screen locked](./Screenshot2.png)
 
 Building
 --------
