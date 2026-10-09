@@ -1,0 +1,9 @@
+name: Progress
+icon: activity
+color: null
+sort: "modified:desc"
+filters:
+  all:
+    - field: type
+      op: equals
+      value: Progress

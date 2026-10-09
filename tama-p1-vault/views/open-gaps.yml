@@ -1,0 +1,12 @@
+name: Open Gaps
+icon: circle-dot
+color: "#dc2626"
+sort: "property:id:asc"
+filters:
+  all:
+    - field: type
+      op: equals
+      value: Gap
+    - field: status
+      op: equals
+      value: Open

@@ -1,0 +1,9 @@
+# ---- Obsidian / Tolaria vault ----
+# Machine-specific UI layout; keep app/theme/plugin settings tracked.
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+
+# Deleted-notes trash + plugin caches
+**/.trash/
+**/.smart-env/
+**/.obsidian/cache

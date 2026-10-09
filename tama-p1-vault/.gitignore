@@ -1,0 +1,14 @@
+# Obsidian/Tolaria workspace state (machine-specific)
+.obsidian/workspace
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+.trash/
+.smart-env/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.log

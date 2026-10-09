@@ -1,0 +1,8 @@
+name: All Notes
+icon: null
+color: null
+sort: "modified:desc"
+filters:
+  all:
+    - field: type
+      op: is_not_empty
