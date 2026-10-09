@@ -3,7 +3,7 @@ Tama P1 Emulator for Flipper Zero
 
 This is a tama P1 Emulator app for Flipper Zero, based on [TamaLIB](https://github.com/jcrona/tamalib/).
 
-![Alt Text](tama.gif)
+![Tama P1 emulator running on a Flipper Zero](./tama.gif)
 
 How to play
 -----------
@@ -22,8 +22,8 @@ Rename this to `rom.bin`.
   Back button three times within 2 seconds to unlock. The screen also locks
   automatically after 60 seconds of no input.
 
-![Alt Text](Screenshot1.png)
-![Alt Text](Screenshot2.png)
+![Tama P1 gameplay (landscape)](./Screenshot1.png)
+![Tama P1 gameplay (portrait)](./Screenshot2.png)
 
 Building
 --------
@@ -61,7 +61,7 @@ Implemented
   - A+C shortcut (mute/change in-game time)
   - Double / quadruple speed
 
-![Alt Text](Screenshot3.png)
+![Tama P1 emulator menu](./Screenshot3.png)
 
 To-Do
 -----
@@ -77,7 +77,7 @@ To-Do
   - Autosave and changing autosave frequency
   - Save settings to /tama_p1/settings.txt
 
-![Alt Text](Screenshot4.png)
+![Tama P1 settings screenshot](./Screenshot4.png)
 
 Project memory
 --------------

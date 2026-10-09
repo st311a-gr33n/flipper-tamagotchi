@@ -17,8 +17,8 @@ session context.
 
 ## Where the code lives
 
-The project source is at the repository root (`/home/st3114-gr33n/Documents/sg-git/flipper-projects/tama_p1`); this vault is
-the `tama-p1-vault/` subdirectory inside it.
+The project source is at the repository root; this vault is the `tama-p1-vault/`
+subdirectory inside it (path shown by the code working directory, not hard-coded).
 
 ## What this vault tracks
 

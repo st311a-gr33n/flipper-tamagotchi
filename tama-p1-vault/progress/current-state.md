@@ -32,8 +32,10 @@ related_to:
 - Auto-lock ([[gap-003-auto-lock|GAP-003]] / [[adr-0002-auto-lock-design|ADR-0002]]):
   locks after 60 s with no input (when not already locked and the emulator is live);
   any input postpones it; unlocking resets the idle clock.
+  **Verified on device (2026-10-08).**
 - Quick lock ([[adr-0003-quick-lock-gesture|ADR-0003]]): holding the B/Down button
   while playing locks immediately, without opening the menu.
+  **Verified on device (2026-10-08).**
 
 ## Known active gaps (pointer)
 
@@ -44,10 +46,9 @@ related_to:
 
 ## Next suggested work
 
-1. On-device test of hold-B quick lock and confirm no accidental locks in play.
-2. On-device test of 60 s auto-lock ([[gap-003-auto-lock|GAP-003]]).
-3. Re-verify [[gap-002-button-mashing|GAP-002]] after input-path changes.
-4. Optional: make the auto-lock timeout a user setting.
+1. Re-verify [[gap-002-button-mashing|GAP-002]] after input-path changes.
+2. Optional: make the auto-lock timeout a user setting.
+3. Optional: keep watching for accidental locks from holding B during play.
 
 ## Source docs
 

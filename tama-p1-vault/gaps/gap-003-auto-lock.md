@@ -28,3 +28,4 @@ Implemented in [[tama-p1-app|Tama P1 App]] (`tama_p1.c`, 2026-10-08):
 - The 30 Hz tick branch locks after 60 s idle when not already locked and the
   emulator is live; locked state reuses the manual-lock path.
 - Verified: `./fbt fap_tama_p1` compiles + links against firmware API 87.1.
+- Verified on device (2026-10-08): auto-lock engages after 60 s idle.

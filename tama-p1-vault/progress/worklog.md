@@ -26,6 +26,14 @@ Format:
 
 <!-- Add new entries above this line. -->
 
+## 2026-10-08 — opencode — On-device verification of Phase 2 & 3
+- User confirmed on hardware: hold-Down/B quick lock works, and the 60 s auto-lock
+  works. No accidental locks reported so far.
+- Marked [[adr-0003-quick-lock-gesture|ADR-0003]] and [[gap-003-auto-lock|GAP-003]]
+  behaviours as device-verified in [[current-state|Current State]].
+- Normalized `README.md` image links (relative, GitHub-safe) and removed the
+  device-specific absolute path from `AGENTS.md`.
+
 ## 2026-10-08 — opencode — Phase 3 quick lock (hold B)
 - Implemented quick lock in `tama_p1.c`: out-of-menu `b` + `InputTypeLong` releases
   all TamaLIB buttons, resets the unlock counter, and sets `locked`.
