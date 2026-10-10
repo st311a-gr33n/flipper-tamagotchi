@@ -48,13 +48,20 @@ Flipper UI shell for the Tamagotchi P1 emulator. Implements `tama_p1_app`
   menu, a long press of the logical B button (`b`; physical Down in landscape)
   releases all TamaLIB buttons and sets `locked` — no menu needed. The menu "Lock"
   row remains and is labelled `Lock (hold B)`.
-- **Locked-screen status bar** (implemented, [[adr-0004-locked-screen-status-bar|ADR-0004]]):
-  while locked the view port is moved to `GuiLayerWindow` so the firmware draws its
-  system status bar (battery/SD/BT/clock) above the hint; it returns to
-  `GuiLayerFullscreen` on unlock. `set_locked()` raises `g_pending_layer`, and
-  `apply_layer_for_lock()` performs the swap after the state mutex is released.
+- **Locked-screen status bar** (implemented, [[adr-0005-app-drawn-locked-status-bar|ADR-0005]],
+  supersedes [[adr-0004-locked-screen-status-bar|ADR-0004]]): while locked,
+  `draw_locked_screen()` draws an app-side bar (BT marker via
+  `furi_hal_bt_is_active`, clock via `furi_hal_rtc_get_datetime`, battery % from a
+  1 Hz app-thread poll cached in `battery_charge`/`battery_charging`) plus the
+  unlock hint, entirely in `tama_p1_draw_callback`. The view port stays on
+  `GuiLayerFullscreen`; there is **no** runtime GUI-layer swap.
 
 ## Notes
 
-- `g_ctx`, `g_state_mutex`, `layout_mode`, `in_menu`, `locked`, `last_activity_tick`,
-  `g_gui`, `g_view_port`, `g_window_layer`, `g_pending_layer` are file-global state.
+- `g_ctx`, `g_state_mutex`, `layout_mode`, `in_menu`, `locked`, `last_activity_tick`
+  are file-global state.
+- Do **not** move the view port between GUI layers while running:
+  [[adr-0004-locked-screen-status-bar|ADR-0004]] did this and froze the device on
+  lock. Keep it on `GuiLayerFullscreen` and draw any UI in the app's draw callback.
+- `tama_p1_input_callback` runs on the GUI thread and must **not block**: it uses
+  `furi_message_queue_put(..., 0)`. The event queue depth is 16.

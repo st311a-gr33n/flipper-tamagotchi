@@ -26,6 +26,37 @@ Format:
 
 <!-- Add new entries above this line. -->
 
+## 2026-10-10 — opencode — Replace firmware status bar with app-drawn bar (fix freeze)
+- The ADR-0004 layer swap kept freezing on device (loader "spinning clock", hard
+  reboot) even after the non-blocking input callback and queue-depth fixes.
+  Changing GUI layers at runtime from a running `ViewPort` app is unstable here.
+- Reverted the swap: removed `apply_layer_for_lock()`, `g_gui`/`g_view_port`/
+  `g_window_layer`/`g_pending_layer`, and the deferred-swap block; the view port
+  stays on `GuiLayerFullscreen`.
+- Added `draw_locked_screen()`: draws BT marker (`furi_hal_bt_is_active`), clock
+  (`furi_hal_rtc_get_datetime`), a separator, and the unlock hint — entirely in the
+  app's own draw callback. Battery is polled on the app thread at 1 Hz and cached
+  (`furi_hal_power_get_pct`/`is_charging` are I2C reads, unsafe in the draw path).
+- Files touched: `tama_p1.c` (synced to `applications_user/tama_p1`).
+- Wrote [[adr-0005-app-drawn-locked-status-bar|ADR-0005]] (supersedes
+  [[adr-0004-locked-screen-status-bar|ADR-0004]]).
+- Verified: `./fbt fap_tama_p1` compiles, links, passes APPCHK (API 87.1).
+- Next: on-device test lock (hold-B, menu, auto-lock) — confirm no freeze and the
+  compact bar shows.
+
+## 2026-10-10 — opencode — Fix lock-screen freeze (deadlock)
+- Bug: locking the screen froze the device (loader "sand clock"). Root cause: the
+  layer swap made the main thread acquire `gui->mutex` (via
+  `gui_remove_view_port`/`gui_add_view_port`), while `tama_p1_input_callback` could
+  block forever on a full event queue **while the GUI thread holds `gui->mutex`**.
+  Neither side could progress → deadlock.
+- Fix: `tama_p1_input_callback` now uses `furi_message_queue_put(..., 0)` (drop when
+  full; never block the GUI thread), matching the timer callback. Event queue depth
+  raised 8 → 16 for headroom.
+- Files touched: `tama_p1.c` (synced to `applications_user/tama_p1`).
+- Verified: `./fbt fap_tama_p1` compiles, links, passes APPCHK (API 87.1).
+- Next: on-device re-test lock via hold-B, menu, and 60 s auto-lock; confirm no freeze.
+
 ## 2026-10-10 — opencode — Locked screen shows the firmware status bar
 - Added the system status bar (battery/SD/BT/clock) to the locked screen by
   moving the view port between `GuiLayerFullscreen` (game) and `GuiLayerWindow`

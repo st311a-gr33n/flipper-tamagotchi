@@ -1,9 +1,11 @@
 #include <furi.h>
+#include <furi_hal.h>
 #include <furi_hal_bus.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <storage/storage.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stm32wbxx_ll_tim.h>
 #include "tamalib/tamalib.h"
 #include "tama.h"
@@ -23,28 +25,16 @@ uint8_t unlock_back_count = 0;
 uint32_t unlock_last_tick = 0;
 uint32_t last_activity_tick = 0;
 
-static Gui* g_gui = NULL;
-static ViewPort* g_view_port = NULL;
-static bool g_window_layer = false;
-static bool g_pending_layer = false;
-
-// Move the view port between Fullscreen (game) and Window (locked) layers.
-// GuiLayerWindow lets the firmware draw its status bar above the view port.
-// Must be called outside the g_state_mutex critical section: gui_add/remove
-// acquire the GUI mutex, which the draw callback also takes while it holds
-// g_state_mutex.
-static void apply_layer_for_lock(bool is_locked) {
-    if(g_gui == NULL || g_view_port == NULL) return;
-    if(g_window_layer == is_locked) return;
-    gui_remove_view_port(g_gui, g_view_port);
-    gui_add_view_port(g_gui, g_view_port, is_locked ? GuiLayerWindow : GuiLayerFullscreen);
-    g_window_layer = is_locked;
-}
+// Battery state for the locked screen. Polled on the app thread (the I2C read is
+// not safe to do in the draw callback, which runs on the GUI thread); the draw
+// callback reads these under g_state_mutex.
+uint8_t battery_charge = 0;
+bool battery_charging = false;
+uint32_t battery_last_tick = 0;
 
 static void set_locked(bool value) {
     locked = value;
     unlock_back_count = 0;
-    g_pending_layer = true;
 }
 
 uint8_t speed = 1;
@@ -453,6 +443,37 @@ static void draw_menu(Canvas* const canvas) {
     canvas_draw_str(canvas, 75, 60, "Save & Exit");
 }
 
+// Compact app-drawn status bar (Bluetooth, clock, battery) plus the unlock hint.
+// Drawn by the app itself on the fullscreen view port: this avoids changing GUI
+// layers at runtime, which proved unstable inside a running app.
+static void draw_locked_screen(Canvas* canvas) {
+    char buf[16];
+
+    canvas_set_font(canvas, FontSecondary);
+    if(furi_hal_bt_is_active()) {
+        canvas_draw_str(canvas, 2, 8, "BT");
+    }
+
+    DateTime dt;
+    furi_hal_rtc_get_datetime(&dt);
+    snprintf(buf, sizeof(buf), "%02u:%02u", (unsigned)dt.hour, (unsigned)dt.minute);
+    canvas_draw_str_aligned(canvas, 64, 8, AlignCenter, AlignBottom, buf);
+
+    if(battery_charging) {
+        canvas_draw_str_aligned(canvas, 126, 8, AlignRight, AlignBottom, "CHG");
+    } else {
+        snprintf(buf, sizeof(buf), "%u%%", (unsigned)battery_charge);
+        canvas_draw_str_aligned(canvas, 126, 8, AlignRight, AlignBottom, buf);
+    }
+
+    canvas_draw_line(canvas, 0, 10, 127, 10);
+
+    canvas_set_font(canvas, FontPrimary);
+    canvas_draw_str_aligned(canvas, 64, 30, AlignCenter, AlignCenter, "Locked");
+    canvas_set_font(canvas, FontSecondary);
+    canvas_draw_str_aligned(canvas, 64, 44, AlignCenter, AlignCenter, "Press Back 3x to unlock");
+}
+
 static void tama_p1_draw_callback(Canvas* const canvas, void* cb_ctx) {
     furi_assert(cb_ctx);
 
@@ -466,10 +487,7 @@ static void tama_p1_draw_callback(Canvas* const canvas, void* cb_ctx) {
         canvas_set_font(canvas, FontPrimary);
         canvas_draw_str(canvas, 30, 30, "Halted");
     } else if(locked) {
-        canvas_set_font(canvas, FontPrimary);
-        canvas_draw_str_aligned(canvas, 64, 18, AlignCenter, AlignCenter, "Locked");
-        canvas_set_font(canvas, FontSecondary);
-        canvas_draw_str_aligned(canvas, 64, 32, AlignCenter, AlignCenter, "Press Back 3x to unlock");
+        draw_locked_screen(canvas);
     } else {
         if(in_menu) {
             // switch(layout_mode)
@@ -505,7 +523,10 @@ static void tama_p1_input_callback(InputEvent* input_event, void* ctx) {
     FuriMessageQueue* event_queue = ctx;
 
     TamaEvent event = {.type = EventTypeInput, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    // Never block here: this callback runs on the GUI thread while it holds the
+    // GUI mutex. Blocking on a full queue would deadlock with the main thread's
+    // gui_add/remove_view_port calls. Drop the event if the queue is full.
+    furi_message_queue_put(event_queue, &event, 0);
 }
 
 static void tama_p1_update_timer_callback(void* ctx) {
@@ -844,7 +865,7 @@ int32_t tama_p1_app(void* p) {
     g_state_mutex = furi_mutex_alloc(FuriMutexTypeRecursive);
     tama_p1_init(ctx);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(TamaEvent));
+    FuriMessageQueue* event_queue = furi_message_queue_alloc(16, sizeof(TamaEvent));
 
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, tama_p1_draw_callback, g_state_mutex);
@@ -852,8 +873,6 @@ int32_t tama_p1_app(void* p) {
 
     Gui* gui = furi_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
-    g_gui = gui;
-    g_view_port = view_port;
 
     FuriTimer* timer =
         furi_timer_alloc(tama_p1_update_timer_callback, FuriTimerTypePeriodic, event_queue);
@@ -879,6 +898,11 @@ int32_t tama_p1_app(void* p) {
                     tamalib_set_button(BTN_RIGHT, BTN_STATE_RELEASED);
                     set_locked(true);
                     in_menu = false;
+                }
+                if(furi_get_tick() - battery_last_tick > furi_ms_to_ticks(1000)) {
+                    battery_charge = furi_hal_power_get_pct();
+                    battery_charging = furi_hal_power_is_charging();
+                    battery_last_tick = furi_get_tick();
                 }
                 view_port_update(view_port);
             } else if(event.type == EventTypeInput) {
@@ -1256,11 +1280,6 @@ int32_t tama_p1_app(void* p) {
                 }
             }
             furi_mutex_release(g_state_mutex);
-        }
-        // Apply any requested layer swap outside the state mutex.
-        if(g_pending_layer) {
-            g_pending_layer = false;
-            apply_layer_for_lock(locked);
         }
         // else {
         //     // Timeout

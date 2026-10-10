@@ -20,10 +20,15 @@ rewrites; append corrections instead.
 
 ## 2026-10-10
 
-- The locked screen now shows the Flipper's status bar (time, battery, Bluetooth,
-  SD), so you can check the device without unlocking. It uses the firmware's own
-  status bar, so it follows your status-bar theme and settings. The bar is hidden
-  again as soon as you unlock.
+- The locked screen now shows a small status bar drawn by the app: Bluetooth
+  marker, clock, and battery percentage (plus `CHG` while charging). This replaces
+  the earlier attempt to show the firmware status bar, which could freeze the
+  device when locking.
+- Fixed a freeze (loader "sand clock") that could happen when locking the screen:
+  the input callback no longer blocks on a full event queue while the GUI is busy.
+- (Corrected) An earlier note said the locked screen showed the firmware's own
+  status bar (battery/SD/BT/clock). That approach was removed because it froze the
+  device on lock; the app-drawn bar above replaces it.
 
 ## 2026-10-08
 

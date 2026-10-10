@@ -1,9 +1,11 @@
 ---
 type: Decision
 id: ADR-0004
-status: Accepted
+status: Superseded
 date: 2026-10-10
 area: app/ui
+superseded_by:
+  - "[[adr-0005-app-drawn-locked-status-bar|ADR-0005]]"
 tags:
   - ui
   - lock
