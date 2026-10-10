@@ -3,8 +3,7 @@ views:
     name: Gap Kanban
     filters:
       or:
-        - priority == "medium"
-        - priority == "feature"
+        - type == "Gap"
     groupBy:
       property: status
       direction: ASC
