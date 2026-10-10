@@ -4,6 +4,10 @@ id: GAP-001
 priority: feature
 status: Resolved
 area: app/ui
+tags:
+  - ui
+  - lock
+  - gap
 related_to:
   - "[[tama-p1-app|Tama P1 App]]"
   - "[[overview|Architecture Overview]]"

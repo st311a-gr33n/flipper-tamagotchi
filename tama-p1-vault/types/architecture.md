@@ -1,6 +1,6 @@
 ---
 type: Type
-tags: [related_to:]
+tags: [type]
 _icon: layers
 _color: "#3b82f6"
 _order: 1

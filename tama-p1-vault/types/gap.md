@@ -1,6 +1,6 @@
 ---
 type: Type
-tags: [owner:]
+tags: [type]
 _icon: alert-triangle
 _color: "#dc2626"
 _order: 7

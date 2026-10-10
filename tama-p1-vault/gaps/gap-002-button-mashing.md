@@ -4,6 +4,10 @@ id: GAP-002
 priority: medium
 status: Open
 area: input
+tags:
+  - input
+  - emulator
+  - gap
 related_to:
   - "[[tama-p1-app|Tama P1 App]]"
 ---

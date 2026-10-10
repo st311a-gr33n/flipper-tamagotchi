@@ -1,6 +1,6 @@
 ---
 type: Type
-tags: [year:]
+tags: [type]
 _icon: book-open
 _color: "#06b6d4"
 _order: 6

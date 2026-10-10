@@ -4,6 +4,11 @@ id: ADR-0003
 status: Accepted
 date: 2026-10-08
 area: app/ui
+tags:
+  - ui
+  - lock
+  - input
+  - decision
 related_to:
   - "[[adr-0001-screen-lock-design|ADR-0001]]"
   - "[[tama-p1-app|Tama P1 App]]"

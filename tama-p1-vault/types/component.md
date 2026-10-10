@@ -1,6 +1,6 @@
 ---
 type: Type
-tags: [depends_on:]
+tags: [type]
 _icon: box
 _color: "#22c55e"
 _order: 2

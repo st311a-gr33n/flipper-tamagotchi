@@ -3,6 +3,11 @@ type: Component
 status: Active
 path: tama_p1.c
 area: app
+tags:
+  - app
+  - ui
+  - lock
+  - component
 depends_on:
   - "[[hal|HAL]]"
   - "[[tamalib-core|TamaLIB core]]"

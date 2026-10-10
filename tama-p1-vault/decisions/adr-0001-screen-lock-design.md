@@ -4,6 +4,10 @@ id: ADR-0001
 status: Accepted
 date: 2026-10-07
 area: app/ui
+tags:
+  - ui
+  - lock
+  - decision
 related_to:
   - "[[gap-001-screen-lock|GAP-001]]"
   - "[[tama-p1-app|Tama P1 App]]"

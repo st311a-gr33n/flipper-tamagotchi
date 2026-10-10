@@ -3,6 +3,10 @@ type: Component
 status: Active
 path: hal.c
 area: integration
+tags:
+  - hal
+  - flipper-zero
+  - component
 depends_on:
   - "[[tamalib-core|TamaLIB core]]"
 related_to:

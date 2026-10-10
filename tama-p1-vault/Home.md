@@ -9,6 +9,7 @@ related_to:
   - "[[gap-registry|Gap Registry]]"
 tags:
   - tama-p1
+  - flipper-zero
 ---
 
 # Tama P1 — Project Home
@@ -37,7 +38,7 @@ This vault is the project's persistent memory for humans and AI agents. Start wi
 | Source files | `files/` | per-file indexes |
 | Progress | [[current-state|Current State]], [[phases|Phases]], [[changelog|Changelog]], [[worklog|Worklog]], [[sessions|Sessions]] | `progress/` |
 | References | `references/` | papers, tools, links |
-| Gaps | [[gap-registry|Gap Registry]] | [high](gaps-high) · [medium](gaps-medium) · [low](gaps-low) · [feature](gaps-feature) |
+| Gaps | [[gap-registry|Gap Registry]], [[Gap Kanban.base|Gap Kanban]] | [high](gaps-high) · [medium](gaps-medium) · [low](gaps-low) · [feature](gaps-feature) |
 
 ## Quick links
 
@@ -45,6 +46,7 @@ This vault is the project's persistent memory for humans and AI agents. Start wi
 - [[current-state|Current State]]
 - [[phases|Phases]]
 - [[gap-registry|Gap Registry]]
+- [[Gap Kanban.base|Gap Kanban]]
 
 ## How to use this vault
 

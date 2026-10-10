@@ -1,6 +1,6 @@
 ---
 type: Type
-tags: [supersedes:]
+tags: [type]
 _icon: git-branch
 _color: "#f59e0b"
 _order: 4

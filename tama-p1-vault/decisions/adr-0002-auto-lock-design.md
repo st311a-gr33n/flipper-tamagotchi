@@ -4,6 +4,10 @@ id: ADR-0002
 status: Accepted
 date: 2026-10-08
 area: app/ui
+tags:
+  - ui
+  - lock
+  - decision
 related_to:
   - "[[adr-0001-screen-lock-design|ADR-0001]]"
   - "[[gap-003-auto-lock|GAP-003]]"

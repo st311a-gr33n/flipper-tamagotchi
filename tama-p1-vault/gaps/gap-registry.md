@@ -1,6 +1,6 @@
 ---
 type: Project
-tags: [project]
+tags: [project, gap]
 status: Active
 stage: Living index
 related_to:

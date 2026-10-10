@@ -2,7 +2,7 @@ views:
   - type: kanban
     name: Gap Kanban
     filters:
-      or:
+      and:
         - type == "Gap"
     groupBy:
       property: status
@@ -11,3 +11,4 @@ views:
       - file.name
       - type
       - priority
+      - tags

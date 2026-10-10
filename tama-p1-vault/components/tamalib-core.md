@@ -3,6 +3,10 @@ type: Component
 status: Active
 path: tamalib/
 area: emulator-core
+tags:
+  - tamalib
+  - emulator
+  - component
 related_to:
   - "[[hal|HAL]]"
   - "[[tama-p1-app|Tama P1 App]]"

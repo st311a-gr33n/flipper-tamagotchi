@@ -4,6 +4,10 @@ id: GAP-003
 priority: feature
 status: Resolved
 area: app/ui
+tags:
+  - ui
+  - lock
+  - gap
 related_to:
   - "[[gap-001-screen-lock|GAP-001]]"
   - "[[adr-0001-screen-lock-design|ADR-0001]]"

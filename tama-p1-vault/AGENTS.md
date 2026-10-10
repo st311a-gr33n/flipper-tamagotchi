@@ -96,12 +96,18 @@ When finishing work:
 3. Update `progress/current-state.md` (phase, what works, active gaps).
 4. Open a `Gap` note for anything unresolved; close gaps by setting `status`.
 5. Update or add `Component` / `Source File` notes if structure changed.
-6. Never edit an `ADR` after it is accepted — write a new ADR that supersedes it.
+6. Assign or refresh `tags` on every note you touch, using the vocabulary above.
+7. Never edit an `ADR` after it is accepted — write a new ADR that supersedes it.
 
 ## Views
 
 Saved views live in `views/*.yml` (kebab-case filename = stable view id). The
 gap views filter `type = Gap` by `priority`.
+
+`Gap Kanban.base` is an [Obsidian Bases](https://obsidian.md/bases) kanban that
+groups all `Gap` notes by `status` and shows `type`, `priority`, and `tags`. Open
+it whenever you need a status board; keep a gap's `tags` accurate so the board
+stays useful.
 
 ## Filenames, wikilinks, and tags
 
@@ -110,9 +116,32 @@ gap views filter `type = Gap` by `priority`.
   `[[...]]` by filename, not H1 title. Always write the filename, adding an alias
   for readability: `[[my-note|My Note]]`. Linking with the bare title
   (`[[My Note]]`) looks broken and creates an empty note when clicked.
-- **Tags** classify notes by domain/facet. Prefer tags for broad cross-cutting
-  classification; reserve wikilinks for real relationships (`depends_on`,
-  parent/child, `ADR`↔component, `Gap`↔component).
+- Reserve wikilinks for real relationships (`depends_on`, parent/child,
+  `ADR`↔component, `Gap`↔component); use **tags** for broad cross-cutting
+  classification (see below).
+
+## Tags
+
+Tags are how notes across different types are correlated, so never leave a note
+untagged. Follow these rules:
+
+- Every note (except `types/`) carries **at least one domain tag** for the
+  subsystem or facet it touches. Aim for 2–5 tags per note.
+- Tags are lowercase kebab-case with no leading `#`, no trailing colon, and no
+  spaces (`tamalib`, `app-ui`).
+- Use a **controlled vocabulary**: reuse an existing tag before inventing a new
+  one, and record new tags in the Domain row below so agents stay consistent.
+- Tag a `Gap` with the same domain tags as the component/subsystem it affects, so
+  gaps correlate with the rest of the vault (and group correctly in the kanban).
+
+### Starter vocabulary
+
+| Kind | Tags |
+|---|---|
+| Kind | `architecture`, `component`, `decision`, `gap`, `progress`, `project`, `reference`, `source-file` |
+| Reference kind | `spec`, `analysis`, `guide`, `sdk`, `paper` |
+| Facet | `build`, `test`, `docs`, `security`, `performance`, `ui`, `config` |
+| Domain | `tama-p1`, `flipper-zero`, `tamalib`, `emulator`, `hal`, `app`, `ui`, `input`, `lock` |
 
 ## What agents should avoid
 
