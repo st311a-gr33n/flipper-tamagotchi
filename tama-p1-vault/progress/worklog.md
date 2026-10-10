@@ -26,6 +26,19 @@ Format:
 
 <!-- Add new entries above this line. -->
 
+## 2026-10-10 — opencode — Locked screen shows the firmware status bar
+- Added the system status bar (battery/SD/BT/clock) to the locked screen by
+  moving the view port between `GuiLayerFullscreen` (game) and `GuiLayerWindow`
+  (locked) so the firmware draws its own bar. No hand-drawn indicators.
+- `tama_p1.c`: added `g_gui`/`g_view_port`/`g_window_layer`/`g_pending_layer`,
+  `apply_layer_for_lock()`, and `set_locked()`; the four lock transitions now go
+  through `set_locked()` and the layer swap is applied after the state mutex is
+  released. Repositioned the lock hint (y 18/32) for the 51-px window frame.
+- Files touched: `tama_p1.c` (synced to `applications_user/tama_p1`).
+- Wrote [[adr-0004-locked-screen-status-bar|ADR-0004]].
+- Verified: `./fbt fap_tama_p1` compiles, links, and passes APPCHK (API 87.1).
+- Next: on-device check that the bar shows only while locked and unlock still works.
+
 ## 2026-10-08 — opencode — On-device verification of Phase 2 & 3
 - User confirmed on hardware: hold-Down/B quick lock works, and the 60 s auto-lock
   works. No accidental locks reported so far.

@@ -23,6 +23,30 @@ uint8_t unlock_back_count = 0;
 uint32_t unlock_last_tick = 0;
 uint32_t last_activity_tick = 0;
 
+static Gui* g_gui = NULL;
+static ViewPort* g_view_port = NULL;
+static bool g_window_layer = false;
+static bool g_pending_layer = false;
+
+// Move the view port between Fullscreen (game) and Window (locked) layers.
+// GuiLayerWindow lets the firmware draw its status bar above the view port.
+// Must be called outside the g_state_mutex critical section: gui_add/remove
+// acquire the GUI mutex, which the draw callback also takes while it holds
+// g_state_mutex.
+static void apply_layer_for_lock(bool is_locked) {
+    if(g_gui == NULL || g_view_port == NULL) return;
+    if(g_window_layer == is_locked) return;
+    gui_remove_view_port(g_gui, g_view_port);
+    gui_add_view_port(g_gui, g_view_port, is_locked ? GuiLayerWindow : GuiLayerFullscreen);
+    g_window_layer = is_locked;
+}
+
+static void set_locked(bool value) {
+    locked = value;
+    unlock_back_count = 0;
+    g_pending_layer = true;
+}
+
 uint8_t speed = 1;
 const uint8_t speed_options[] = {1, 2, 4};
 const uint8_t min_speed = 1;
@@ -443,9 +467,9 @@ static void tama_p1_draw_callback(Canvas* const canvas, void* cb_ctx) {
         canvas_draw_str(canvas, 30, 30, "Halted");
     } else if(locked) {
         canvas_set_font(canvas, FontPrimary);
-        canvas_draw_str_aligned(canvas, 64, 26, AlignCenter, AlignCenter, "Locked");
+        canvas_draw_str_aligned(canvas, 64, 18, AlignCenter, AlignCenter, "Locked");
         canvas_set_font(canvas, FontSecondary);
-        canvas_draw_str_aligned(canvas, 64, 40, AlignCenter, AlignCenter, "Press Back 3x to unlock");
+        canvas_draw_str_aligned(canvas, 64, 32, AlignCenter, AlignCenter, "Press Back 3x to unlock");
     } else {
         if(in_menu) {
             // switch(layout_mode)
@@ -828,6 +852,8 @@ int32_t tama_p1_app(void* p) {
 
     Gui* gui = furi_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
+    g_gui = gui;
+    g_view_port = view_port;
 
     FuriTimer* timer =
         furi_timer_alloc(tama_p1_update_timer_callback, FuriTimerTypePeriodic, event_queue);
@@ -851,8 +877,7 @@ int32_t tama_p1_app(void* p) {
                     tamalib_set_button(BTN_LEFT, BTN_STATE_RELEASED);
                     tamalib_set_button(BTN_MIDDLE, BTN_STATE_RELEASED);
                     tamalib_set_button(BTN_RIGHT, BTN_STATE_RELEASED);
-                    unlock_back_count = 0;
-                    locked = true;
+                    set_locked(true);
                     in_menu = false;
                 }
                 view_port_update(view_port);
@@ -879,8 +904,7 @@ int32_t tama_p1_app(void* p) {
                         unlock_last_tick = now;
                         unlock_back_count++;
                         if(unlock_back_count >= UNLOCK_BACK_PRESSES) {
-                            locked = false;
-                            unlock_back_count = 0;
+                            set_locked(false);
                         }
                     }
                 } else if(in_menu) {
@@ -1146,8 +1170,7 @@ int32_t tama_p1_app(void* p) {
                                 tamalib_set_button(BTN_LEFT, BTN_STATE_RELEASED);
                                 tamalib_set_button(BTN_MIDDLE, BTN_STATE_RELEASED);
                                 tamalib_set_button(BTN_RIGHT, BTN_STATE_RELEASED);
-                                unlock_back_count = 0;
-                                locked = true;
+                                set_locked(true);
                                 in_menu = false;
                             }
                             break;
@@ -1206,8 +1229,7 @@ int32_t tama_p1_app(void* p) {
                         tamalib_set_button(BTN_LEFT, BTN_STATE_RELEASED);
                         tamalib_set_button(BTN_MIDDLE, BTN_STATE_RELEASED);
                         tamalib_set_button(BTN_RIGHT, BTN_STATE_RELEASED);
-                        unlock_back_count = 0;
-                        locked = true;
+                        set_locked(true);
                     } else if(
                         event.input.type == InputTypePress ||
                         event.input.type == InputTypeRelease) {
@@ -1234,6 +1256,11 @@ int32_t tama_p1_app(void* p) {
                 }
             }
             furi_mutex_release(g_state_mutex);
+        }
+        // Apply any requested layer swap outside the state mutex.
+        if(g_pending_layer) {
+            g_pending_layer = false;
+            apply_layer_for_lock(locked);
         }
         // else {
         //     // Timeout

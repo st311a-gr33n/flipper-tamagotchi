@@ -18,6 +18,13 @@ file-level history is `git log`.
 Add a dated bullet whenever user-facing behavior changes. Do not backfill
 rewrites; append corrections instead.
 
+## 2026-10-10
+
+- The locked screen now shows the Flipper's status bar (time, battery, Bluetooth,
+  SD), so you can check the device without unlocking. It uses the firmware's own
+  status bar, so it follows your status-bar theme and settings. The bar is hidden
+  again as soon as you unlock.
+
 ## 2026-10-08
 
 - You can now lock quickly by holding the Down button (B) while playing — no menu

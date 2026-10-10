@@ -36,6 +36,10 @@ related_to:
 - Quick lock ([[adr-0003-quick-lock-gesture|ADR-0003]]): holding the B/Down button
   while playing locks immediately, without opening the menu.
   **Verified on device (2026-10-08).**
+- Locked-screen status bar ([[adr-0004-locked-screen-status-bar|ADR-0004]]): while
+  locked the view port moves to `GuiLayerWindow`, so the firmware draws its own
+  status bar (battery/SD/BT/clock) above the unlock hint; the game view returns to
+  fullscreen on unlock. **Compile-verified; on-device check pending.**
 
 ## Known active gaps (pointer)
 

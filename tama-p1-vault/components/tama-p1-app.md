@@ -48,8 +48,13 @@ Flipper UI shell for the Tamagotchi P1 emulator. Implements `tama_p1_app`
   menu, a long press of the logical B button (`b`; physical Down in landscape)
   releases all TamaLIB buttons and sets `locked` — no menu needed. The menu "Lock"
   row remains and is labelled `Lock (hold B)`.
+- **Locked-screen status bar** (implemented, [[adr-0004-locked-screen-status-bar|ADR-0004]]):
+  while locked the view port is moved to `GuiLayerWindow` so the firmware draws its
+  system status bar (battery/SD/BT/clock) above the hint; it returns to
+  `GuiLayerFullscreen` on unlock. `set_locked()` raises `g_pending_layer`, and
+  `apply_layer_for_lock()` performs the swap after the state mutex is released.
 
 ## Notes
 
-- `g_ctx`, `g_state_mutex`, `layout_mode`, `in_menu`, `locked`, `last_activity_tick`
-  are file-global state.
+- `g_ctx`, `g_state_mutex`, `layout_mode`, `in_menu`, `locked`, `last_activity_tick`,
+  `g_gui`, `g_view_port`, `g_window_layer`, `g_pending_layer` are file-global state.
